@@ -6,6 +6,7 @@ import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -24,6 +25,7 @@ public class MainDataSourceConfiguration extends DataSourceConfiguration {
 
     @Bean
     @Primary
+    @Profile("default")
     @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
@@ -32,8 +34,11 @@ public class MainDataSourceConfiguration extends DataSourceConfiguration {
     @Bean
     @Primary
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder) {
+
+        DataSource dataSource = dataSource();
+
         return builder
-                .dataSource(dataSource())
+                .dataSource(dataSource)
                 .packages("com.datasources.main.domain")
                 .persistenceUnit("default")
                 .properties(createProperties())
