@@ -25,7 +25,6 @@ public class MainDataSourceConfiguration extends DataSourceConfiguration {
 
     @Bean
     @Primary
-    @Profile("default")
     @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
@@ -34,9 +33,7 @@ public class MainDataSourceConfiguration extends DataSourceConfiguration {
     @Bean
     @Primary
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder builder) {
-
         DataSource dataSource = dataSource();
-
         return builder
                 .dataSource(dataSource)
                 .packages("com.datasources.main.domain")

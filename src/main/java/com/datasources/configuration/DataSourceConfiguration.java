@@ -1,7 +1,5 @@
 package com.datasources.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy;
 
 import java.util.HashMap;

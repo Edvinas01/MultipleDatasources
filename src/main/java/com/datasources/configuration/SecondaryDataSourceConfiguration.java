@@ -1,17 +1,16 @@
 package com.datasources.configuration;
 
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import javax.sql.DataSource;
 
 @Configuration
 @EnableJpaRepositories(
@@ -23,18 +22,30 @@ import javax.sql.DataSource;
 )
 public class SecondaryDataSourceConfiguration extends DataSourceConfiguration {
 
+    @Value("${spring.secondaryDatasource.username}")
+    private String username;
+
+    @Value("${spring.secondaryDatasource.password}")
+    private String password;
+
+    @Value("${spring.secondaryDatasource.url}")
+    private String url;
+
+    @Autowired
+    private PoolProperties poolProperties;
+
     @Bean
-    @Profile({"default", "secondary"})
-    @ConfigurationProperties("spring.dataSource")
     public DataSource secondaryDataSource() {
-        return DataSourceBuilder.create().build();
+        DataSource dataSource = new DataSource(poolProperties);
+        dataSource.setPassword(password);
+        dataSource.setUsername(username);
+        dataSource.setUrl(url);
+        return dataSource;
     }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory(EntityManagerFactoryBuilder builder) {
-
         DataSource dataSource = secondaryDataSource();
-
         return builder
                 .dataSource(dataSource)
                 .packages("com.datasources.secondary.domain")
